@@ -180,7 +180,7 @@ module Rets
     def objects(object_ids, opts = {})
       response = case object_ids
         when String then fetch_object(object_ids, opts)
-        when Array  then fetch_object(object_ids.join(","), opts)
+        when Array  then fetch_object(object_ids.join(":"), opts)
         else raise ArgumentError, "Expected instance of String or Array, but got #{object_ids.inspect}."
       end
 
@@ -203,10 +203,11 @@ module Rets
 
         return parts
       else
+        logger.debug "Rets::Client: Found 1 part (the whole body)"
+
         # fake a multipart for interface compatibility
         headers = {}
-        response.headers.each { |k,v| headers[k] = v[0] }
-
+        response.headers.each { |k,v| headers[k.downcase] = v }
         part = Parser::Multipart::Part.new(headers, response.body)
 
         return [part]

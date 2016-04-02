@@ -217,10 +217,10 @@ class TestClient < MiniTest::Test
   end
 
   def test_objects_handle_array_argument
-    @client.expects(:fetch_object).with("1,2", :foo => :bar)
+    @client.expects(:fetch_object).with("1:2:3", :foo => :bar)
     @client.stubs(:create_parts_from_response)
 
-    @client.objects([1,2], :foo => :bar)
+    @client.objects([1,2,3], :foo => :bar)
   end
 
   def test_objects_raises_on_other_arguments
@@ -256,7 +256,7 @@ class TestClient < MiniTest::Test
   def test_create_parts_from_response_returns_a_single_part_when_not_multipart_response
     response = {}
     response.stubs(:header => { "content-type" => ['text/plain']})
-    response.stubs(:headers => { "content-type" => ['text/plain']})
+    response.stubs(:headers => { "Content-Type" => 'text/plain'})
     response.stubs(:body => "fakebody")
 
     parts = @client.create_parts_from_response(response)
